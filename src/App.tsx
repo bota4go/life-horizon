@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CountrySelect } from './components/CountrySelect'
+import { CountDotRing } from './components/CountDotRing'
 import { COUNTRY_OPTIONS } from './lib/countries'
 import {
   adjustedLifeExpectancy,
@@ -141,21 +142,30 @@ export default function App() {
             ))}
           </div>
 
-          <div className="readout" aria-live="polite">
+          <div className="readout-row" aria-live="polite">
             {formValid ? (
               <>
-                <p className="readout-label">{unit.label}</p>
-                <p className="readout-value">
-                  {formatUnitValue(unitValue, unit.decimals)}
-                </p>
-                <p className="readout-note">
-                  Based on ~{yearsLeft.toFixed(3)} estimated years remaining.
-                </p>
+                <div className="readout">
+                  <p className="readout-label">{unit.label}</p>
+                  <p className="readout-value">
+                    {formatUnitValue(unitValue, unit.decimals)}
+                  </p>
+                  <p className="readout-note">
+                    Based on ~{yearsLeft.toFixed(3)} estimated years remaining.
+                  </p>
+                </div>
+                <CountDotRing
+                  unitLabel={unit.label}
+                  unitValue={unitValue}
+                  visualCap={unit.visualCap}
+                />
               </>
             ) : (
-              <p className="readout-placeholder">
-                Enter a valid age and choose a country to see the readout.
-              </p>
+              <div className="readout readout-only">
+                <p className="readout-placeholder">
+                  Enter a valid age and choose a country to see the readout.
+                </p>
+              </div>
             )}
           </div>
         </section>

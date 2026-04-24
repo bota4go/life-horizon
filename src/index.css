@@ -364,12 +364,66 @@ body {
   color: var(--heading);
 }
 
+.readout-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem 1.75rem;
+}
+
 .readout {
+  flex: 1 1 14rem;
   min-height: 9rem;
   padding: 1.1rem 1rem;
   border-radius: 14px;
   border: 1px solid var(--stroke);
   background: rgba(0, 0, 0, 0.28);
+}
+
+.readout-only {
+  flex: 1 1 100%;
+}
+
+.dot-ring-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dot-ring {
+  display: block;
+  width: min(196px, 46vw);
+  aspect-ratio: 1;
+  height: auto;
+  overflow: visible;
+}
+
+.dot-ring-halo {
+  pointer-events: none;
+}
+
+.dot-ring-dot {
+  fill: rgba(255, 255, 255, 0.1);
+  transition:
+    fill 0.45s ease,
+    filter 0.45s ease;
+}
+
+.dot-ring-dot-on {
+  fill: #7dd3fc;
+  filter: drop-shadow(0 0 2.8px rgba(125, 211, 252, 0.85));
+}
+
+.dot-ring-caption {
+  margin: 0;
+  max-width: 11rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: center;
 }
 
 .readout-label {
