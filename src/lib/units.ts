@@ -22,12 +22,17 @@ export type UnitDef = {
   shortLabel: string
   symbol: string
   decimals: number
+  /** Values at or above this fill every slot in the dot ring (when count exceeds ring slots). */
+  visualCap: number
   compute: (remainingYears: number) => number
 }
 
 function daysFromYears(remainingYears: number): number {
   return remainingYears * DAYS_PER_YEAR
 }
+
+/** Slots on the ring; small counts map one-to-one, larger values scale to this cap. */
+export const DOT_RING_SLOTS = 72
 
 export const UNITS: UnitDef[] = [
   {
@@ -36,6 +41,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'yr',
     symbol: '≈',
     decimals: 2,
+    visualCap: 90,
     compute: (y) => y,
   },
   {
@@ -44,6 +50,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'mo',
     symbol: '≈',
     decimals: 1,
+    visualCap: 1080,
     compute: (y) => y * 12,
   },
   {
@@ -52,6 +59,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'wk',
     symbol: '≈',
     decimals: 1,
+    visualCap: 4700,
     compute: (y) => (y * DAYS_PER_YEAR) / 7,
   },
   {
@@ -60,6 +68,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'd',
     symbol: '≈',
     decimals: 1,
+    visualCap: 32850,
     compute: (y) => daysFromYears(y),
   },
   {
@@ -68,6 +77,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'h',
     symbol: '≈',
     decimals: 0,
+    visualCap: 788400,
     compute: (y) => daysFromYears(y) * HOURS_PER_DAY,
   },
   {
@@ -76,6 +86,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'min',
     symbol: '≈',
     decimals: 0,
+    visualCap: 4.73e7,
     compute: (y) => daysFromYears(y) * HOURS_PER_DAY * 60,
   },
   {
@@ -84,6 +95,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'moon',
     symbol: '≈',
     decimals: 0,
+    visualCap: 1100,
     compute: (y) => daysFromYears(y) / SYNODIC_DAYS,
   },
   {
@@ -92,6 +104,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'season',
     symbol: '≈',
     decimals: 1,
+    visualCap: 360,
     compute: (y) => y * 4,
   },
   {
@@ -100,6 +113,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'sunset',
     symbol: '≈',
     decimals: 0,
+    visualCap: 32850,
     compute: (y) => daysFromYears(y),
   },
   {
@@ -108,6 +122,7 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'wknd',
     symbol: '≈',
     decimals: 0,
+    visualCap: 9380,
     compute: (y) => (daysFromYears(y) * 2) / 7,
   },
   {
@@ -116,10 +131,22 @@ export const UNITS: UnitDef[] = [
     shortLabel: 'beats',
     symbol: '≈',
     decimals: 0,
+    visualCap: 3.4e9,
     compute: (y) =>
       daysFromYears(y) * HOURS_PER_DAY * 60 * HEART_BPM,
   },
 ]
+
+/** How many dots are “on” for this value (0 … DOT_RING_SLOTS). */
+export function dotRingFilledCount(unitValue: number, visualCap: number): number {
+  if (!Number.isFinite(unitValue) || unitValue <= 0) return 0
+  const slots = DOT_RING_SLOTS
+  if (unitValue <= slots) {
+    return Math.min(slots, Math.max(0, Math.round(unitValue)))
+  }
+  const ratio = Math.min(1, unitValue / Math.max(visualCap, 1e-9))
+  return Math.min(slots, Math.round(slots * ratio))
+}
 
 export function formatUnitValue(value: number, decimals: number): string {
   if (!Number.isFinite(value)) return '—'
